@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YT Downloader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #111111;
+      --surface:  #1c1c1c;
+      --card:     #1f1f1f;
+      --border:   #2e2e2e;
+      --border-h: #444444;
+      --red:      #e63232;
+      --red-dk:   #c42626;
+      --text:     #efefef;
+      --sub:      #888888;
+      --faint:    #3a3a3a;
+      --white:    #ffffff;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* subtle dot grid background */
+    body {
+      background-image: radial-gradient(circle, #2a2a2a 1px, transparent 1px);
+      background-size: 28px 28px;
+      background-attachment: fixed;
+    }
+
+    /* page */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+      gap: 0;
+    }
+
+    /* ── brand ── */
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2.8rem;
+      animation: rise .5s ease both;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;          /* space between icon and text */
+    }
+
+    /* YouTube play button icon — clean SVG, no glow */
+    .yt-badge {
+      width: 54px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .brand-wordmark {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .word-yt {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 2.25rem;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .word-dl {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sub);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .brand-tagline {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--sub);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── notice banner ── */
+    .notice {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      animation: rise .5s .05s ease both;
+    }
+
+    .notice-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--sub);
+      margin-bottom: 0.5rem;
+    }
+
+    .notice p {
+      font-size: 0.82rem;
+      color: #777;
+      line-height: 1.6;
+    }
+
+    .badges {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      color: #666;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.18rem 0.65rem;
+    }
+
+    /* ── main card ── */
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem 1.75rem;
+      animation: rise .5s .1s ease both;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--sub);
+      margin-bottom: 0.6rem;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      overflow: hidden;
+      transition: border-color .2s;
+      background: var(--surface);
+    }
+    .input-row:focus-within {
+      border-color: var(--border-h);
+    }
+
+    .input-icon {
+      display: flex;
+      align-items: center;
+      padding: 0 0.85rem;
+      color: var(--faint);
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .input-icon svg { width: 15px; height: 15px; }
+
+    .url-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      padding: 0.8rem 0.9rem;
+    }
+    .url-input::placeholder { color: #444; }
+
+    .submit-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+    }
+    .submit-btn:hover  { background: var(--red-dk); }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn svg { width: 16px; height: 16px; }
+
+    /* ── footer ── */
+    .footer {
+      margin-top: 1.75rem;
+      font-size: 0.7rem;
+      color: #444;
+      text-align: center;
+      animation: rise .5s .15s ease both;
+    }
+
+    /* ── loading overlay ── */
+    #overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(5px);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+    }
+    #overlay.show { display: flex; }
+
+    .spin {
+      width: 40px; height: 40px;
+      border: 3px solid #2a2a2a;
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    .ov-text { font-size: 0.88rem; color: var(--sub); }
+    .ov-sub  { font-size: 0.72rem; color: #444; }
+
+    /* ── keyframes ── */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="overlay">
+  <div class="spin"></div>
+  <p class="ov-text">Fetching video info…</p>
+  <p class="ov-sub">This may take a few seconds</p>
+</div>
+
+<main class="page">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="logo-row">
+      <!-- Clean YouTube play icon -->
+      <svg class="yt-badge" viewBox="0 0 54 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="54" height="38" rx="9" fill="#e63232"/>
+        <path d="M22 12L36 19L22 26V12Z" fill="white"/>
+      </svg>
+
+      <div class="brand-wordmark">
+        <span class="word-yt">YT</span>
+        <span class="word-dl">Downloader</span>
+      </div>
+    </div>
+    <p class="brand-tagline">Download YouTube videos in any quality &amp; format</p>
+  </div>
+
+  <!-- Privacy notice -->
+  <div class="notice">
+    <p class="notice-title">About this app</p>
+    <p>This web app lets you download YouTube videos to your device. We do not collect any personal data, track your activity, or store browser cookies.</p>
+    <div class="badges">
+      <span class="badge">No data collected</span>
+      <span class="badge">No cookies</span>
+      <span class="badge">100% anonymous</span>
+    </div>
+  </div>
+
+  <!-- Input card -->
+  <div class="card">
+    <label class="field-label" for="video_url">Paste YouTube link</label>
+
+    <form method="POST" action="{% url 'fetch_video_info' %}" id="main-form">
+      {% csrf_token %}
+
+      <div class="input-row">
+        <span class="input-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+        </span>
+        <input
+          id="video_url"
+          class="url-input"
+          type="url"
+          name="video_url"
+          placeholder="https://www.youtube.com/watch?v=..."
+          required
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        Fetch Qualities
+      </button>
+    </form>
+  </div>
+
+  <p class="footer">For personal use only &nbsp;·&nbsp; Respect content creator rights</p>
+
+</main>
+
+<script>
+  document.getElementById('main-form').addEventListener('submit', function () {
+    document.getElementById('overlay').classList.add('show');
+  });
+</script>
+</body>
+</html>
